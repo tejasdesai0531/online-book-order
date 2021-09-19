@@ -5,36 +5,26 @@ import { validateRequest } from '../../middlewares/validate-request';
 
 const router = express.Router()
 
-interface SearchResponse {
-    kind: string,
-    totalItems: Number,
-    books: [Book]
-}
-
 interface Book {
-    volumeInfo: {
-        id: string,
-        title: string,
-        subtitle: string,
-        authors: [string],
-        publisher: string,
-        publishedDate: string,
-        pageCount: Number,
-        categories: [string],
-        imageLinks: {
-            smallThumbnail: string,
-            thumbnail: string
-        }
+    id: string,
+    title: string,
+    authors: [string],
+    publisher: string,
+    publishedDate: string,
+    description: string,
+    pageCount: number,
+    categories: [string],
+    imageLinks: {
+        smallThumbnail: string,
+        thumbnail: string
     },
-    saleInfo: {
-        listPrice: {
-            amount: number,
-            currencyCode: string
-        },
-        retailPrice: {
-            amount: number,
-            currencyCode: string
-        }
+    listPrice: {
+        amount: number,
+        currencyCode: string
+    },
+    retailPrice: {
+        amount: number,
+        currencyCode: string
     }
 }
 
@@ -72,9 +62,32 @@ router.get(
             key: process.env.GOOGLE_BOOKS_API_KEY
         }
 
-        let response = (await axios.get<SearchResponse>('https://www.googleapis.com/books/v1/volumes', { params: params })).data
+        let response = (await axios.get('https://www.googleapis.com/books/v1/volumes', { params: params })).data
 
-        res.send(response)
+        let books: Book[] = []
+
+        response.items.forEach((item: any) => {
+
+            books.push({
+                id: item.id,
+                title: item.volumeInfo.title,
+                authors: item.volumeInfo.authors,
+                publisher: item.volumeInfo.publisher,
+                publishedDate: item.volumeInfo.publishedDate,
+                description: item.volumeInfo.description,
+                pageCount: item.volumeInfo.pageCount,
+                categories: item.volumeInfo.categories,
+                imageLinks: item.volumeInfo.imageLinks,
+                listPrice: item.saleInfo.listPrice,
+                retailPrice: item.saleInfo.retailPrice
+            })
+
+        })
+
+        res.send({ 
+            totalItems: response.totalItems,
+            books: books
+        })
 
 })
 
