@@ -22,9 +22,11 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
+
     const { email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
+    
     if (!existingUser) {
       throw new BadRequestError('Invalid credentials');
     }
@@ -46,12 +48,10 @@ router.post(
       process.env.JWT_KEY!
     );
 
-    // Store it on session object
-    req.session = {
-      jwt: userJwt
-    };
-
-    res.status(200).send(existingUser);
+    res.status(200).send({
+      token: userJwt,
+      user: existingUser
+    });
   }
 );
 

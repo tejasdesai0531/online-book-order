@@ -12,8 +12,8 @@ beforeAll(async () => {
   process.env.JWT_KEY = 'asdfasdf';
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-  mongo = new MongoMemoryServer();
-  const mongoUri = await mongo.getUri();
+  mongo = await MongoMemoryServer.create({ binary: { version: '4.2.6' } });
+  const mongoUri = mongo.getUri();
 
   await mongoose.connect(mongoUri, {
     useNewUrlParser: true,
@@ -46,7 +46,7 @@ global.signin = async () => {
     })
     .expect(201);
 
-  const cookie = response.get('Set-Cookie');
+  const token = response.body.token;
 
-  return cookie;
+  return token;
 };
