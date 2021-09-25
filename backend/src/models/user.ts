@@ -6,9 +6,6 @@ import { Password } from '../services/password';
 interface UserAttrs {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  mobile: string;
 }
 
 // An interface that describes the properties
@@ -24,7 +21,12 @@ interface UserDoc extends mongoose.Document {
   password: string;
   firstName: string;
   lastName: string;
-  mobile: string
+  mobile: string;
+  address: [{
+      line1: string,
+      line2: string,
+      pincode: string
+  }]
 }
 
 const userSchema = new mongoose.Schema(
@@ -39,12 +41,25 @@ const userSchema = new mongoose.Schema(
     },
     firstName: String,
     lastName: String,
-    mobile: String
+    mobile: String,
+    address: [{
+        line1: String,
+        line2: String,
+        pincode: String
+    }]
   },
   {
     toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;
+        ret.address = ret.address.map((a: any) => {
+          return {
+            id: a._id,
+            line1: a.line1,
+            line2: a.line2,
+            pincode: a.pincode
+          }
+        })
         delete ret._id;
         delete ret.password;
         delete ret.__v;
