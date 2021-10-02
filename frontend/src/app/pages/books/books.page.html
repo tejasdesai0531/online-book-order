@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>books</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row class="favorite-items" style="background:rgb(233, 228, 228)">
+    <ion-col *ngFor="let book of books" size="6" (click)="navigateToBookDetails(book)">
+      <div style="padding: 5px; margin: 0px; background: white; height: 100%;">
+        <img [src]="book.imageLinks.smallThumbnail" />
+        <h6>{{ book.title }}</h6>
+        <p>Price: {{ book.retailPrice.amount }}</p>
+      </div>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

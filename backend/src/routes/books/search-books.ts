@@ -1,5 +1,5 @@
 import express, { Response, Request} from 'express'
-import { query } from 'express-validator';
+import { checkSchema, query } from 'express-validator';
 import axios from 'axios';
 import { validateRequest } from '../../middlewares/validate-request';
 
@@ -28,14 +28,24 @@ interface Book {
     }
 }
 
+var Schema = {
+    "searchBy": {
+        in: 'query',
+        matches: {
+            options: [/\b(?:all|category|title|author|publisher)\b/],
+            errorMessage: "Invalid search by text"
+        }
+    }
+}
+
 router.get(
     '/search',
     [
         query('searchBy')
-            .exists()
-            .withMessage('searchBy is required'),
+            .isIn(['all', 'category', 'title', 'author', 'publisher'])
+            .withMessage('invalid searchBy text'),
         query('searchText')
-            .exists()
+            .isLength({min: 1})
             .withMessage('searchText is required'),
     ],
     validateRequest,
@@ -66,23 +76,25 @@ router.get(
 
         let books: Book[] = []
 
-        response.items.forEach((item: any) => {
+        if(response.totalItems > 0) {
+            response.items.forEach((item: any) => {
 
-            books.push({
-                id: item.id,
-                title: item.volumeInfo.title,
-                authors: item.volumeInfo.authors,
-                publisher: item.volumeInfo.publisher,
-                publishedDate: item.volumeInfo.publishedDate,
-                description: item.volumeInfo.description,
-                pageCount: item.volumeInfo.pageCount,
-                categories: item.volumeInfo.categories,
-                imageLinks: item.volumeInfo.imageLinks,
-                listPrice: item.saleInfo.listPrice,
-                retailPrice: item.saleInfo.retailPrice
+                books.push({
+                    id: item.id,
+                    title: item.volumeInfo.title,
+                    authors: item.volumeInfo.authors,
+                    publisher: item.volumeInfo.publisher,
+                    publishedDate: item.volumeInfo.publishedDate,
+                    description: item.volumeInfo.description,
+                    pageCount: item.volumeInfo.pageCount,
+                    categories: item.volumeInfo.categories,
+                    imageLinks: item.volumeInfo.imageLinks,
+                    listPrice: item.saleInfo.listPrice,
+                    retailPrice: item.saleInfo.retailPrice
+                })
+    
             })
-
-        })
+        }
 
         res.send({ 
             totalItems: response.totalItems,
