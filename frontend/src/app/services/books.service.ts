@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiMethod } from '../core/services/consts';
 import { HttpService } from '../core/services/http/http.service';
-import { BooksList } from '../models/books-list.model';
+import { Book, BooksList } from '../models/books-list.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +23,9 @@ export class BooksService {
       .pipe(map(data => {
         return data
       }))
+  }
+
+  bookDetails(id): Observable<Book> {
+    return this.__http.requestCall(`/books/${id}`, ApiMethod.GET)
   }
 }

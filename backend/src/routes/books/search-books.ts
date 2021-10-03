@@ -28,16 +28,6 @@ interface Book {
     }
 }
 
-var Schema = {
-    "searchBy": {
-        in: 'query',
-        matches: {
-            options: [/\b(?:all|category|title|author|publisher)\b/],
-            errorMessage: "Invalid search by text"
-        }
-    }
-}
-
 router.get(
     '/search',
     [

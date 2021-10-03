@@ -40,8 +40,7 @@ export class BooksPage implements OnInit {
   }
 
   navigateToBookDetails(book: Book) {
-    let navigationExtras: NavigationExtras = { state: { book: book } };
-    this.router.navigate(['book-details'], navigationExtras);
+    this.router.navigate(['books', book.id]);
   }
 
 }

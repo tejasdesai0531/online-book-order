@@ -1,3 +1,3 @@
 export enum environment {
-    apiUrl = "http://192.168.0.101:3000/api"
+    apiUrl = "http://192.168.0.105:3000/api"
 }
